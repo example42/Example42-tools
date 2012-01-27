@@ -13,7 +13,7 @@ rake
 echo "############################"
 echo "### Executing puppet doc ###"
 echo "############################"
-for file in $( find . | grep ".pp$" ) ; do
+for file in $( find . | grep "\.pp$" ) ; do
     echo "### $file"
     puppet doc $file
 done
@@ -21,7 +21,7 @@ done
 echo "############################"
 echo "### Executing puppetlint ###"
 echo "############################"
-for file in $( find . | grep ".pp$" ) ; do
+for file in $( find . | grep "\.pp$" ) ; do
     echo "### $file"
     puppet-lint $file
 done
