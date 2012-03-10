@@ -69,5 +69,6 @@ fi
 saved_tgz=$work_dir/$module.tgz
 tar --exclude-vcs -czvf $saved_tgz $module
 
-curl -c $work_dir/cook -F "user_password=$password" -F "user_username=$user" -F "user_submit=Sign in" http://forge.puppetlabs.com/users/sign_in
-curl -b  $work_dir/cook -F "release_file=@$saved_tgz" -F "release_version=$version" -F "release_notes=$notes" -F "release_submit=Add release" http://forge.puppetlabs.com/users/$user/modules/$module/releases/new
+curl -c $work_dir/cook http://forge.puppetlabs.com/users/sign_in
+curl -b $work_dir/cook -c $work_dir/cook -F "user_password=$password" -F "user_username=$user" -F "user_submit=Sign in" http://forge.puppetlabs.com/users/sign_in
+curl -b  $work_dir/cook -c $work_dir/cook -F "release_file=@$saved_tgz" -F "release_version=$version" -F "release_notes=$notes" -F "release_submit=Add release" http://forge.puppetlabs.com/users/$user/modules/$module/releases
