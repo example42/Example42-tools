@@ -50,7 +50,7 @@ rsync -av --exclude=".git" $OLDMODULE/* $NEWMODULE/
 
 
 echo "RENAMING FILES"
-for file in $( find $NEWMODULE | grep $OLDMODULESTRING ) ; do 
+for file in $( find -name $NEWMODULE | grep $OLDMODULESTRING ) ; do 
   newfile=`echo $file | sed -e "s/$OLDMODULESTRING/$NEWMODULE/"`
   mv "$file" "$newfile" && echo "Renamed $file to $newfile"
 done
