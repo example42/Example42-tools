@@ -31,8 +31,8 @@ if [ ! -f $template/manifests/init.pp ] ; then
   exit 1
 fi
 
-OLDMODULE="$template"
-OLDMODULESTRING="$template"
+OLDMODULE=$template
+OLDMODULESTRING=$template
 echo
 echo "Source module template is $template "
 echo -n "Enter the name of the new module based on $template: "
@@ -50,23 +50,21 @@ rsync -av --exclude=".git" $OLDMODULE/* $NEWMODULE/
 
 
 echo "RENAMING FILES"
-for file in $( find -name $NEWMODULE | grep $OLDMODULESTRING ) ; do 
-  newfile=`echo $file | sed -e "s/$OLDMODULESTRING/$NEWMODULE/"`
-  mv "$file" "$newfile" && echo "Renamed $file to $newfile"
+for file in $( find . -name $NEWMODULE | grep $OLDMODULESTRING ) ; do 
+  newfile=`echo $file | sed "s/$OLDMODULESTRING/$NEWMODULE/g"`
+  echo "$file => $newfile" ;  mv $file $newfile && echo "Renamed $file to $newfile"
 done
 
 echo "---------------------------------------------------"
 echo "CHANGING FILE CONTENTS"
-
-# Detect OS
-if [ -f /mach_kernel ] ; then
-  sed_opt='"" -e ' # Use under MacOS
-else
-  sed_opt='' # Use under Linux
-fi
-
 for file in $( grep -R $OLDMODULESTRING $NEWMODULE | cut -d ":" -f 1 | uniq ) ; do 
-  sed -i $sed_opt "s/$OLDMODULESTRING/$NEWMODULE/g" $file && echo "Changed $file"
+  # Detect OS
+  if [ -f /mach_kernel ] ; then
+    sed -i "" -e "s/$OLDMODULESTRING/$NEWMODULE/g" $file && echo "Changed $file"
+  else
+    sed -i "s/$OLDMODULESTRING/$NEWMODULE/g" $file && echo "Changed $file"
+  fi
+
 done
 
 echo "Module $NEWMODULE created"
