@@ -3,69 +3,115 @@
 showhelp () {
 cat << EOF
 
-This script creates a new module based on existing Example42 modules.
-Run it from the directory that contains the "source" module (moduledir).
+This script creates a new module based on an existing module or module template.
+Run it from Example42 Puppet modules base dir.
 
-By default it uses the "foo" module as template.
-Specify -t <source_module> to use a different template.
-Example: $0 -t foo_webapp
+Usage:
+$0 -t standard42
+Create a module (name will be prompted) based on the template in Example42-templates/standard42
+
+$0 -m mysql
+Create a module cloned from the existing module mysql
+
+$0 -t package42 -n vim
+Create a module called vim based on Example42-templates/minimal42
 
 EOF
 }
-
-template="foo"
 
 while [ $# -gt 0 ]; do
   case "$1" in
   -t)
     template=$2
     shift 2 ;;
+  -m)
+    module=$2
+    shift 2 ;;
+  -n)
+    name=$2
+    shift 2 ;;
   esac
 done
 
 showhelp
 
-if [ ! -f $template/manifests/init.pp ] ; then
-  echo "I don't find $template/manifests/init.pp "
-  echo "Run this script from the base modules directory and specify a valid source module template"
-  exit 1
-fi
-
-OLDMODULE=$template
-OLDMODULESTRING=$template
-echo
-echo "Source module template is $template "
-echo -n "Enter the name of the new module based on $template: "
-read NEWMODULE
-
-if [ -f $NEWMODULE/manifests/init.pp ] ; then
-  echo "Module $NEWMODULE already exists."
-  echo "Move or delete it if you want to recreate it. Quitting."
-  exit 1
-fi
-
-echo "COPYING MODULE"
-mkdir $NEWMODULE
-rsync -av --exclude=".git" $OLDMODULE/* $NEWMODULE/
-
-
-echo "RENAMING FILES"
-for file in $( find . -name $NEWMODULE | grep $OLDMODULESTRING ) ; do 
-  newfile=`echo $file | sed "s/$OLDMODULESTRING/$NEWMODULE/g"`
-  echo "$file => $newfile" ;  mv $file $newfile && echo "Renamed $file to $newfile"
-done
-
-echo "---------------------------------------------------"
-echo "CHANGING FILE CONTENTS"
-for file in $( grep -R $OLDMODULESTRING $NEWMODULE | cut -d ":" -f 1 | uniq ) ; do 
-  # Detect OS
-  if [ -f /mach_kernel ] ; then
-    sed -i "" -e "s/$OLDMODULESTRING/$NEWMODULE/g" $file && echo "Changed $file"
-  else
-    sed -i "s/$OLDMODULESTRING/$NEWMODULE/g" $file && echo "Changed $file"
+clone_from_template() {
+  if [ ! -f Example42-templates/$template/manifests/init.pp ] ; then
+    echo "I don't find Example42-templates/$template/manifests/init.pp "
+    echo "Run this script from the base modules directory and specify a valid source module template"
+    echo "Available Templates are in Example42-templates:"
+    ls -1 Example42-templates/
+    exit 1
   fi
 
-done
+  OLDMODULE=Example42-templates/$template
+  OLDMODULESTRING=$template
 
-echo "Module $NEWMODULE created"
-echo "Start to edit $NEWMODULE/manifests/params.pp to customize it"
+  clone
+}
+
+clone_from_module() {
+  if [ ! -f $module/manifests/init.pp ] ; then
+    echo "I don't find $module/manifests/init.pp "
+    echo "Run this script from the base modules directory and specify a valid source module"
+    exit 1
+  fi
+
+  OLDMODULE=$module
+  OLDMODULESTRING=$module
+
+  clone
+}
+
+function clone() {
+  echo
+  if [ x$name == 'x' ] ; then
+    echo -n "Enter the name of the new module to create:"
+    read NEWMODULE
+  else
+    NEWMODULE=$name
+  fi
+  
+  if [ -f $NEWMODULE/manifests/init.pp ] ; then
+    echo "Module $NEWMODULE already exists."
+    echo "Move or delete it if you want to recreate it. Quitting."
+    exit 1
+  fi
+  
+  echo "COPYING MODULE"
+  mkdir $NEWMODULE
+  rsync -av --exclude=".git" $OLDMODULE/* $NEWMODULE/
+  
+  
+  echo "RENAMING FILES"
+  for file in $( find . -name $NEWMODULE | grep $OLDMODULESTRING ) ; do 
+    newfile=`echo $file | sed "s/$OLDMODULESTRING/$NEWMODULE/g"`
+    echo "$file => $newfile" ;  mv $file $newfile && echo "Renamed $file to $newfile"
+  done
+  
+  echo "---------------------------------------------------"
+  echo "CHANGING FILE CONTENTS"
+  for file in $( grep -R $OLDMODULESTRING $NEWMODULE | cut -d ":" -f 1 | uniq ) ; do 
+    # Detect OS
+    if [ -f /mach_kernel ] ; then
+      sed -i "" -e "s/$OLDMODULESTRING/$NEWMODULE/g" $file && echo "Changed $file"
+    else
+      sed -i "s/$OLDMODULESTRING/$NEWMODULE/g" $file && echo "Changed $file"
+    fi
+  
+  done
+  
+  echo "Module $NEWMODULE created"
+  echo "Start to edit $NEWMODULE/manifests/params.pp to customize it"
+
+}
+
+if [ "x$module" == "x" ] ; then
+  clone_from_template
+else
+  clone_from_module
+fi
+
+if [ "x$module" == "x" ] ; then
+  clone_from_template
+fi
