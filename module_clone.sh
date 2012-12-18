@@ -112,6 +112,3 @@ else
   clone_from_module
 fi
 
-if [ "x$module" == "x" ] ; then
-  clone_from_template
-fi
