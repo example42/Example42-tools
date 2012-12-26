@@ -54,7 +54,7 @@ cd $module
 
 echo
 echo 
-puppet module build
+puppet module build $module
 
 echo 
 echo
