@@ -67,7 +67,10 @@ if [ ! $version ] ; then
 fi
 
 saved_tgz=$work_dir/$module.tgz
-tar --exclude-vcs -czvf $saved_tgz $module
+cp Modulefile _Modulefile.tmp
+grep -Ev 'example42/(monitor|firewall)' _Modulefile.tmp > Modulefile
+tar --exclude-vcs --exclude _Modulefile.tmp -czvf $saved_tgz $module
+mv _Modulefile.tmp Modulefile
 
 curl -c $work_dir/cook http://forge.puppetlabs.com/users/sign_in
 curl -b $work_dir/cook -c $work_dir/cook -F "user_password=$password" -F "user_username=$user" -F "user_submit=Sign in" http://forge.puppetlabs.com/users/sign_in
