@@ -1,0 +1,18 @@
+# some snippets for working with the complete tree
+
+# add example42 as a separate r/o remote
+# note that this only works if your repo is called the same as example42's
+git submodule foreach 'git remote rm example42; URL=$(git config --get remote.origin.url); git remote add example42 https://github.com/example42/${URL##*/}; git fetch example42'
+
+
+# reset the origin remote to your own repository
+# note that you'll have to replace the example42 github url there
+git submodule foreach 'URL=$(git config --get remote.origin.url); git remote set-url origin git@github.com:example42/${URL##*/}; git fetch --all --prune'
+
+
+
+# clone all modules on github
+# see http://developer.github.com/v3/repos/forks/#create-a-fork for details
+git submodule foreach 'URL=$(git config --get remote.origin.url); curl -S --user user:password -X POST https://api.github.com/repos/example42/${URL##*/}/forks; sleep 1'
+
+
