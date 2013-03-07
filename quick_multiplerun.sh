@@ -14,12 +14,13 @@ modules=$(cat /tmp/modules-list)
 run_commands () {
   cp Example42-templates/standard42/.travis.yml $1/
   cp Example42-templates/standard42/.gemfile $1/
-  cp Example42-templates/standard42/.gitignore $1/
-  cp Example42-templates/standard42/.fixtures.yml $1/
+  sed "s/standard42/$1/" Example42-templates/standard42/.fixtures.yml > $1/.fixtures.yml
   cp Example42-templates/standard42/Rakefile $1/
   cp Example42-templates/standard42/spec/spec_helper.rb $1/spec/
   cd $1
-  git add .
+  git add .travis.yml .gemfile .fixtures.yml Rakefile spec/spec_helper.rb
+  git commit -m "Enabling Travis integration"
+  git push git@github.com:example42/puppet-$1.git master
   cd ..
 }
 
@@ -45,6 +46,6 @@ run_commit  () {
 # Define what commands set to execute
 
 for m in $modules ; do
-  echo "Working on $m"
-  run_rdoc2md $m
+  echo ; echo "Working on $m"
+  run_commands $m
 done 
