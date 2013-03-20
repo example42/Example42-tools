@@ -1,7 +1,7 @@
 #!/bin/bash
 
 git pull origin master
-# git submodule sync
+git submodule sync
 git submodule init
 git submodule update
 git submodule foreach git checkout master
