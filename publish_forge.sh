@@ -4,74 +4,61 @@ work_dir=/tmp/
 showhelp () {
 cat << EOF
 
-This script publishes a module on the Puppet forge. You must provide the module name, the forge account and its password. You should have already created, on the Forge, a module, under your account, with the same name.
+This script publishes a module on the Puppet forge. It uses Puppet Blacksmith https://github.com/maestrodev/puppet-blacksmith for this task.
+Refer to online documentation to see how to use and configure it.
 
 Example:
-$0 -m module_name -u forge_user -p forge_password -n "release_notes"
+$0 [-m module_name] [-f true] [-b true]
 
 EOF
 }
 
-
+force=false
+bump=true
 while [ $# -gt 0 ]; do
   case "$1" in
     -m)
       module=$2
       shift 2 ;;
-    -u)
-      user=$2
+    -f)
+      force=$2
       shift 2 ;;
-    -p)
-      password=$2
-      shift 2 ;;
-    -n)
-      notes=$2
-      shift 2 ;;
-    -v)
-      version=$2
-      shift 2 ;;
+    -b)
+      bump=$2
+      shift 2 ;;   
   esac
 done
 
-if [ ! $module ] ; then
-  echo "Insert the module name"
-  read module
-fi
-if [ ! $user ] ; then
-  echo "Insert the PuppetForge user name"
-  read user
+if [ $module ] ; then
+  cd $module
 fi
 
-if [ ! $password ] ; then
-  echo "Insert the PuppetForge password"
-  read password
-fi
-
-if [ ! $notes ] ; then
-  echo "Write some release notes, then enter return"
-  read notes
-fi
-
-if [ ! -f $module/manifests/init.pp ] ; then
-  echo "I don't find $module/manifests/init.pp "
-  echo "Run this script from the base modules directory and specify a valid module name"
+if [ ! -f manifests/init.pp ] ; then
+  echo "I don't find manifests/init.pp "
+  echo "Run this script from a module directory or specify -m modulename"
   showhelp
   exit 1
 fi
 
-version=$(grep version $module/Modulefile | cut -d "'" -f 2)
-
-if [ ! $version ] ; then
-  echo "Write the release version"
-  read version
+if [ $bump == 'true' ] ; then
+  pwd
+  rake spec
+  rake lint
 fi
 
-saved_tgz=$work_dir/$module.tgz
-cp Modulefile _Modulefile.tmp
-grep -Ev 'example42/(monitor|firewall)' _Modulefile.tmp > Modulefile
-tar --exclude-vcs --exclude _Modulefile.tmp -czvf $saved_tgz $module
-mv _Modulefile.tmp Modulefile
+if [ $force != 'true' ] ; then
+  read -p "Do you want to continue and push the module to the Forge? (Y/n) " answer
+  answer=${answer:-y}
+  if [ $answer != 'y' ] ; then
+    exit 1
+  fi
+fi
 
-curl -c $work_dir/cook http://forge.puppetlabs.com/users/sign_in
-curl -b $work_dir/cook -c $work_dir/cook -F "user_password=$password" -F "user_username=$user" -F "user_submit=Sign in" http://forge.puppetlabs.com/users/sign_in
-curl -b  $work_dir/cook -c $work_dir/cook -F "release_file=@$saved_tgz" -F "release_version=$version" -F "release_notes=$notes" -F "release_submit=Add release" http://forge.puppetlabs.com/users/$user/modules/$module/releases
+rake -f ../Example42-tools/Rakefile_blacksmith module:bump
+rake -f ../Example42-tools/Rakefile_blacksmith  module:tag
+cp Modulefile /tmp/Modulefile.tmp
+grep -Ev 'example42/(monitor|firewall)' /tmp/Modulefile.tmp > Modulefile
+rake -f ../Example42-tools/Rakefile_blacksmith  module:push
+mv /tmp/Modulefile.tmp Modulefile
+git commit -a -m "Release updated and published to the Forge"
+
