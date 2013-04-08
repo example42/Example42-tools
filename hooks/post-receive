@@ -1,0 +1,14 @@
+#!/bin/bash
+module=$1
+
+sudo /usr/bin/deploy_puppet fixperms
+sudo /usr/bin/deploy_puppet $module
+
+if [[ $? -ne 0 ]]; then 
+  echo
+  echo "WARNING: There were problems in pushing to production your work!" 
+else
+  echo
+  echo "Congratulations. Your code has been pushed to production!"
+  echo 
+fi
