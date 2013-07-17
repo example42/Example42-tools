@@ -4,7 +4,7 @@ work_dir=/tmp/
 showhelp () {
 cat << EOF
 
-This script tags, checks and packages a module to be publoshed on the Forge. You should have already created, on the Forge, a module, under your account, with the same name.
+This script tags, checks and packages a module to be published on the Forge. You should have already created, on the Forge, a module, under your account, with the same name.
 
 Example:
 $0 -m module_name -v "version"
@@ -49,14 +49,16 @@ if [ ! $version ] ; then
   read version
 fi
 
-cd $module 
+cd $module
 ../Example42-tools/check-module.sh
 
 echo
-echo 
+echo
+cd ..
 puppet module build $module
 
-echo 
+echo
 echo
 echo "Tagging module with version $version"
+cd $module
 git tag $version
