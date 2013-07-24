@@ -80,7 +80,7 @@ function clone() {
   
   echo "COPYING MODULE"
   mkdir $NEWMODULE
-  rsync -av --exclude=".git" $OLDMODULE/ $NEWMODULE
+  rsync -av --exclude=".git" --exclude "spec/fixtures" $OLDMODULE/ $NEWMODULE
   
   
   echo "RENAMING FILES"
