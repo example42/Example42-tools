@@ -25,7 +25,7 @@ while [ $# -gt 0 ]; do
       shift 2 ;;
     -b)
       bump=$2
-      shift 2 ;;   
+      shift 2 ;;
   esac
 done
 
@@ -33,7 +33,7 @@ if [ $module ] ; then
   cd $module
 fi
 
-if [ ! -f manifests/init.pp ] ; then
+if [ ! -f manifests/init.pp ] && [ "x$force" = "xfalse" ] ; then
   echo "I don't find manifests/init.pp "
   echo "Run this script from a module directory or specify -m modulename"
   showhelp
@@ -54,11 +54,12 @@ if [ $force != 'true' ] ; then
   fi
 fi
 
-rake -f ../Example42-tools/Rakefile_blacksmith module:bump
-rake -f ../Example42-tools/Rakefile_blacksmith  module:tag
+rake -f ../Example42-tools/Rakefile_blacksmith module:clean
+rake -f ../Example42-tools/Rakefile_blacksmith module:bump || exit 1
+rake -f ../Example42-tools/Rakefile_blacksmith module:tag || exit 1
 cp Modulefile /tmp/Modulefile.tmp
 grep -Ev 'example42/(monitor|firewall)' /tmp/Modulefile.tmp > Modulefile
-rake -f ../Example42-tools/Rakefile_blacksmith  module:push
+rake -f ../Example42-tools/Rakefile_blacksmith module:push || exit 1
 mv /tmp/Modulefile.tmp Modulefile
 git commit -a -m "Release updated and published to the Forge"
-
+git push -u origin master --tags
