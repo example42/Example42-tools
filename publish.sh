@@ -110,7 +110,7 @@ if [ $tag == 'true' ] ; then
   echo_title "MODULE TAG"
   rake -f ../Example42-tools/Rakefile_blacksmith module:tag || exit 1
   version=$(git tag -l | head -1)
-  git commit -a -m "Release $version tagged and published to the Forge"
+  git commit -a -m "Release tagged and published to the Forge"
 fi
 
 if [ $forge == 'true' ] ; then
