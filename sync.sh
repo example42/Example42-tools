@@ -2,13 +2,14 @@
 
 collection=$(basename `pwd`)
 case "$collection" in
-  puppet-modules-nextgen) $suggestedbranch='2.x' ;;
-  puppet-modules-stdmod) $suggestedbranch='3.x' ;;
-  puppet-modules) $suggestedbranch='master' ;;
-  *) $suggestedbranch='master' ;;
+  puppet-modules-nextgen) suggestedbranch='2.x' ;;
+  puppet-modules-stdmod) suggestedbranch='3.x' ;;
+  puppet-modules) suggestedbranch='master' ;;
+  *) suggestedbranch='master' ;;
 esac
 
-branch={$1:-$suggestedbranch}
+branch=${1:-$suggestedbranch}
+echo "Using branch: $branch"
 
 git pull origin master
 git submodule sync
