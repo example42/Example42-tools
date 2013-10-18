@@ -14,5 +14,12 @@ git pull origin master
 git submodule sync
 git submodule init
 git submodule update
-git submodule foreach git checkout $branch
-git submodule foreach git pull origin $branch
+
+if [ "x$branch" == "xmaster" ] ; then
+  git submodule foreach git checkout $branch
+  git submodule foreach git pull origin $branch
+else
+  Example42-tools/example42_do.sh git checkout $branch
+  Example42-tools/example42_do.sh git pull origin $branch
+fi
+
