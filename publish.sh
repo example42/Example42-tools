@@ -15,9 +15,18 @@ This script tags and publishes a module:
 - On the Puppet forge, with Maestrodev's Puppet Blacksmith https://github.com/maestrodev/puppet-blacksmith
 - On GitHub using local credentials
 
-By default tests are done and a new tag is created
-Example:
-$0 [-m module_name] [-f|--force] [-nf|--no-force] [-b|--bump] [-nb|--no-bump] [-t|--tag] [-nt|--no-tag] [-fx|--fix] [-nofx|--no-fix] [-c|--check] [-nc|--no-check]
+Usage:
+$0 [OPTIONS]
+
+Available OPTIONS
+[-m module_name] - Name of the module to publish. Must be in pwd
+[-f|--force] [-nf|--no-force]        Default: disabled - Enable/Disable forcing of the publising even with test errors
+[-b|--bump] [-nb|--no-bump]                            - Enable/Disable bumping of the module version
+[-t|--tag] [-nt|--no-tag]                              - Enable/Disable tagging of the module
+[-fx|--fix] [-nofx|--no-fix]                           - Enable/Disable removal of optional dependencies for the Forge version
+[-c|--check] [-nc|--no-check]                          - Enable/Disable module testing before any operation
+[-s|--sync-master] [-ns|--no-sync-master]              - Enable/Disable merging of version branch on master
+[-u|--update-collection] [-nu|--no-update-collection]  - Enable/Disable automatic update of gitsubmodule on the containing modules collection
 
 EOF
 }
@@ -29,6 +38,8 @@ fix=true
 check=true
 forge=true
 github=true
+syncmaster=true
+updatecollection=true
 
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -65,12 +76,27 @@ while [ $# -gt 0 ]; do
     -nc|--no-check)
       check=false
       shift ;;
+    -s|--sync-master)
+      syncmaster=true
+      shift ;;
+    -ns|--no-sync-master)
+      syncmaster=false
+      shift ;;
+    -u|--update-collection)
+      updatecollection=true
+      shift ;;
+    -nu|--no-update-collection)
+      updatecollection=false
+      shift ;;
   esac
 done
 
 if [ $module ] ; then
   cd $module
 fi
+
+modulename=$(basename `pwd`)
+branch=$(git branch --no-column | grep '*' | cut -c 3-)
 
 if [ ! -f manifests/init.pp ] ; then
   echo_title "SOMETHING WRONG"
@@ -130,5 +156,31 @@ fi
 
 if [ $github == 'true' ] ; then
   echo_title "PUBLISH TO GITHUB"
-  git push -u origin master --tags
+  git push origin $branch --tags
+fi
+
+if [ $updatecollection == 'true' ] ; then
+  echo_title "UPDATING SUBMODULE ON COLLECTION REPO"
+  cd ../
+  git add $modulename
+  git commit -m "Updated $modulename $version"
+  git push
+  cd $modulename
+fi
+
+if [ $syncmaster == 'true' ] ; then
+  if [ "x$branch" != "xmaster"] ; then
+    echo_title "MERGING $branch to master"
+    read -p "Do you want to merge $branch on master? (Y/n) " answer
+    answer=${answer:-y}
+    if [ $answer != 'y' ] ; then
+      git checkout master
+      git merge $branch master
+      read -p "Do you want to merge $branch on master? (Y/n) " answer
+      answer=${answer:-y}
+      if [ $answer != 'y' ] ; then
+        git push origin master
+      fi
+    fi
+  fi
 fi
