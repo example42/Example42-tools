@@ -169,7 +169,7 @@ if [ $updatecollection == 'true' ] ; then
 fi
 
 if [ $syncmaster == 'true' ] ; then
-  if [ "x$branch" != "xmaster"] ; then
+  if [ "x$branch" != "xmaster" ] ; then
     echo_title "MERGING $branch to master"
     read -p "Do you want to merge $branch on master? (Y/n) " answer
     answer=${answer:-y}
