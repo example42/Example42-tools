@@ -18,7 +18,7 @@ git submodule update
 
 if [ "x$branch" == "xmaster" ] ; then
   git submodule foreach git checkout $branch
-  git submodule foreach git pull 
+  git submodule foreach git pull
 else
   Example42-tools/example42_do.sh git checkout $branch
   Example42-tools/example42_do.sh git pull origin $branch
