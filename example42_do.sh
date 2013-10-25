@@ -12,6 +12,8 @@ COMMAND=${*:-"echo Provide a command to execute on all the modules in example42o
 MODULELIST=$(cat example42only_list.txt)
 
 for a in $MODULELIST; do
+  echo
+  echo $a
   cd $a
   $COMMAND
   cd ..
