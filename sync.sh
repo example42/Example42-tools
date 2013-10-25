@@ -24,3 +24,7 @@ else
   Example42-tools/example42_do.sh git pull origin $branch
 fi
 
+if [ "x$branch" == "x2.x" ] ; then
+  Example42-tools/example42_do.sh ../Example42-tools/mergemaster.sh
+fi
+
