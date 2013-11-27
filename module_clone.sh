@@ -81,26 +81,26 @@ function clone() {
   echo "COPYING MODULE"
   mkdir $NEWMODULE
   rsync -av --exclude=".git" --exclude "spec/fixtures" $OLDMODULE/ $NEWMODULE
-  
-  
+
+
   echo "RENAMING FILES"
-  for file in $( find . -name $NEWMODULE | grep $OLDMODULESTRING ) ; do 
+  for file in $( find . -name $NEWMODULE | grep $OLDMODULESTRING ) ; do
     newfile=`echo $file | sed "s/$OLDMODULESTRING/$NEWMODULE/g"`
     echo "$file => $newfile" ;  mv $file $newfile && echo "Renamed $file to $newfile"
   done
-  
+
   echo "---------------------------------------------------"
   echo "CHANGING FILE CONTENTS"
-  for file in $( grep -R $OLDMODULESTRING $NEWMODULE | cut -d ":" -f 1 | uniq ) ; do 
+  for file in $( grep -R $OLDMODULESTRING $NEWMODULE | cut -d ":" -f 1 | uniq ) ; do
     # Detect OS
     if [ -f /mach_kernel ] ; then
       sed -i "" -e "s/$OLDMODULESTRING/$NEWMODULE/g" $file && echo "Changed $file"
     else
       sed -i "s/$OLDMODULESTRING/$NEWMODULE/g" $file && echo "Changed $file"
     fi
-  
+
   done
-  
+
   echo "Module $NEWMODULE created"
   echo "Start to edit $NEWMODULE/manifests/params.pp to customize it"
 
