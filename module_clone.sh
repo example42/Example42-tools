@@ -83,8 +83,14 @@ function clone() {
   rsync -av --exclude=".git" --exclude "spec/fixtures" $OLDMODULE/ $NEWMODULE
 
 
+  echo "RENAMING DIRECTORIES"
+  for file in $( find $NEWMODULE -type d | grep $OLDMODULESTRING ) ; do
+    newfile=`echo $file | sed "s/$OLDMODULESTRING/$NEWMODULE/g"`
+    echo "$file => $newfile" ;  mv $file $newfile && echo "Renamed $file to $newfile"
+  done
+
   echo "RENAMING FILES"
-  for file in $( find . -name $NEWMODULE | grep $OLDMODULESTRING ) ; do
+  for file in $( find $NEWMODULE -type f | grep $OLDMODULESTRING ) ; do
     newfile=`echo $file | sed "s/$OLDMODULESTRING/$NEWMODULE/g"`
     echo "$file => $newfile" ;  mv $file $newfile && echo "Renamed $file to $newfile"
   done
