@@ -146,7 +146,7 @@ if [ $forge == 'true' ] ; then
     cp Modulefile $work_dir/Modulefile.tmp
     grep -Ev 'example42/(monitor|firewall)' $work_dir/Modulefile.tmp > Modulefile
   fi
-
+  rm -rf spec/fixtures
   rake -f ../Example42-tools/Rakefile_blacksmith module:push || exit 1
 
   if [ $fix == 'true' ] ; then
