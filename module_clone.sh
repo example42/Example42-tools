@@ -99,7 +99,8 @@ function clone() {
   echo "CHANGING FILE CONTENTS"
   for file in $( grep -R $OLDMODULESTRING $NEWMODULE | cut -d ":" -f 1 | uniq ) ; do
     # Detect OS
-    if [ -f /mach_kernel ] ; then
+    if [ -f /System/Library/Accessibility/AccessibilityDefinitions.plist ] ; then
+#    if [ -f /mach_kernel ] ; then
       sed -i "" -e "s/$OLDMODULESTRING/$NEWMODULE/g" $file && echo "Changed $file"
     else
       sed -i "s/$OLDMODULESTRING/$NEWMODULE/g" $file && echo "Changed $file"
