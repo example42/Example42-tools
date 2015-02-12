@@ -106,6 +106,9 @@ if [ ! -f manifests/init.pp ] ; then
   exit 1
 fi
 
+echo_title "REMOVING OLD PKGS"
+rm -rf pkg/*
+
 if [ $check == 'true' ] ; then
   pwd
   rake -f ../Example42-tools/Rakefile_blacksmith module:clean
@@ -145,6 +148,7 @@ if [ $forge == 'true' ] ; then
     [ -d $work_dir ] || mkdir -p $work_dir
     cp Modulefile $work_dir/Modulefile.tmp
     grep -Ev 'example42/(monitor|firewall)' $work_dir/Modulefile.tmp > Modulefile
+    rm $work_dir/Modulefile.tmp
   fi
   rm -rf spec/fixtures
   rake -f ../Example42-tools/Rakefile_blacksmith module:push || exit 1
