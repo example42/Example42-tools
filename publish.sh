@@ -144,18 +144,18 @@ fi
 
 if [ $forge == 'true' ] ; then
   echo_title "PUBLISH TO THE FORGE"
-  if [ $fix == 'true' ] ; then
-    [ -d $work_dir ] || mkdir -p $work_dir
-    cp Modulefile $work_dir/Modulefile.tmp
-    grep -Ev 'example42/(monitor|firewall)' $work_dir/Modulefile.tmp > Modulefile
-    rm $work_dir/Modulefile.tmp
-  fi
+#  if [ $fix == 'true' ] ; then
+#    [ -d $work_dir ] || mkdir -p $work_dir
+#    cp Modulefile $work_dir/Modulefile.tmp
+#    grep -Ev 'example42/(monitor|firewall)' $work_dir/Modulefile.tmp > Modulefile
+#    rm $work_dir/Modulefile.tmp
+#  fi
   rm -rf spec/fixtures
   rake -f ../Example42-tools/Rakefile_blacksmith module:push || exit 1
 
-  if [ $fix == 'true' ] ; then
-    mv $work_dir/Modulefile.tmp Modulefile
-  fi
+#  if [ $fix == 'true' ] ; then
+#    mv $work_dir/Modulefile.tmp Modulefile
+#  fi
 fi
 
 if [ $github == 'true' ] ; then
