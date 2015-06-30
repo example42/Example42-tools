@@ -160,15 +160,15 @@ fi
 
 if [ $github == 'true' ] ; then
   echo_title "PUBLISH TO GITHUB"
-  git push origin $branch --tags
+  git push git@github.com:example42/puppet-${modulename}.git  $branch --tags
 fi
 
 if [ $updatecollection == 'true' ] ; then
   echo_title "UPDATING SUBMODULE ON COLLECTION REPO"
   cd ../
-  git add $modulename
+  git add --all $modulename
   git commit -m "Updated $modulename $version"
-  git push
+  git push git@github.com:example42/puppet-modules.git master
   cd $modulename
 fi
 
