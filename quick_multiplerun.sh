@@ -13,8 +13,7 @@ modules=$(cat /tmp/modules-list)
 # Sample set of commands to run for each module
 run_commands () {
   cd $1
-  rm Modulefile
-  ../Example42-tools/publish.sh -nc
+  ../Example42-tools/publish.sh  --no-check --force
   cd ..
 }
 
