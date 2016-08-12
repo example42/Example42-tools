@@ -102,8 +102,8 @@ if [ ! -f manifests/init.pp ] ; then
   echo_title "SOMETHING WRONG"
   echo "I don't find manifests/init.pp "
   echo "Run this script from a module directory or specify -m modulename"
-  showhelp
-  exit 1
+#  showhelp
+#  exit 1
 fi
 
 echo_title "REMOVING OLD PKGS"
@@ -168,7 +168,7 @@ if [ $updatecollection == 'true' ] ; then
   cd ../
   git add --all $modulename
   git commit -m "Updated $modulename $version"
-  git push git@github.com:example42/puppet-modules.git master
+  git push git@github.com:example42/puppet-modules.git 3.x
   cd $modulename
 fi
 

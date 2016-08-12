@@ -1,3 +1,11 @@
+# Deprecation notice
+
+This repo is no longer maintained.
+
+Check [example42 control-repo](https://github.com/example42/control-repo) for a compete Puppet environment with relevant toolset.
+
+
+
 ## Example 42 Tools
 Here you find some scripts and scripts useful to manage Example42 modules
 

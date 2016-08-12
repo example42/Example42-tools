@@ -13,7 +13,10 @@ modules=$(cat /tmp/modules-list)
 # Sample set of commands to run for each module
 run_commands () {
   cd $1
-  ../Example42-tools/publish.sh  --no-check --force
+  cp -a ../auth/.github .
+  git add .github
+  git commit -m "Added github files"
+  git push git@github.com:/example42/puppet-$1 master
   cd ..
 }
 
