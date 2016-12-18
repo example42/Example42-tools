@@ -168,7 +168,7 @@ if [ $updatecollection == 'true' ] ; then
   cd ../
   git add --all $modulename
   git commit -m "Updated $modulename $version"
-  git push git@github.com:example42/puppet-modules.git 3.x
+  git push git@github.com:example42/puppet-modules.git 3.0
   cd $modulename
 fi
 

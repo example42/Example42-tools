@@ -39,9 +39,15 @@ run_commit  () {
   
 }
 
+push_forge  () {
+  cd $1
+  ../Example42-tools/publish.sh --no-check --no-update-collection --force
+  cd ..
+}
+
 # Define what commands set to execute
 
 for m in $modules ; do
   echo ; echo "Working on $m"
-  run_commands $m
+  push_forge $m
 done 
